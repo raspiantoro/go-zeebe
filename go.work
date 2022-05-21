@@ -1,6 +1,8 @@
 go 1.18
 
 use (
-	./donation
-	./wallet
+	./commons
+	./approval
+	./test-broker
+	./purchase
 )

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/camunda-cloud/zeebe/clients/go/pkg/pb"
-	"github.com/camunda-cloud/zeebe/clients/go/pkg/zbc"
+	"github.com/camunda/zeebe/clients/go/v8/pkg/pb"
+	"github.com/camunda/zeebe/clients/go/v8/pkg/zbc"
 )
 
 func main() {
+
 	client, err := zbc.NewClient(&zbc.ClientConfig{
 		GatewayAddress:         os.Getenv("ZEEBE_ADDRESS"),
 		UsePlaintextConnection: true,

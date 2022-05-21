@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_17g7mw5" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:process id="purchasing-process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_02wbmdt</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_02wbmdt" sourceRef="StartEvent_1" targetRef="Activity_06c9w7g" />
+    <bpmn:serviceTask id="Activity_06c9w7g" name="Prepare">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="prepare-purchase" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_02wbmdt</bpmn:incoming>
+      <bpmn:outgoing>Flow_048f4gv</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1t5l1ke</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0bboeeq" name="Completed">
+      <bpmn:incoming>Flow_0fsuvr8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_048f4gv" sourceRef="Activity_06c9w7g" targetRef="event_approval" />
+    <bpmn:sequenceFlow id="Flow_1t5l1ke" sourceRef="Activity_06c9w7g" targetRef="event_approval" />
+    <bpmn:intermediateCatchEvent id="event_approval" name="Approval">
+      <bpmn:incoming>Flow_1t5l1ke</bpmn:incoming>
+      <bpmn:incoming>Flow_048f4gv</bpmn:incoming>
+      <bpmn:outgoing>Flow_1im571d</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1ikatya" messageRef="Message_0fs43ue" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1im571d" sourceRef="event_approval" targetRef="Activity_16e050o" />
+    <bpmn:serviceTask id="Activity_16e050o" name="Update Status">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="update-purchase-status" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1im571d</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fsuvr8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0fsuvr8" sourceRef="Activity_16e050o" targetRef="Event_0bboeeq" />
+  </bpmn:process>
+  <bpmn:message id="Message_0fs43ue" name="purchase_approval_message">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="= purhcase_id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="purchasing-process">
+      <bpmndi:BPMNEdge id="Flow_02wbmdt_di" bpmnElement="Flow_02wbmdt">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_048f4gv_di" bpmnElement="Flow_048f4gv">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="422" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1t5l1ke_di" bpmnElement="Flow_1t5l1ke">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="422" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1im571d_di" bpmnElement="Flow_1im571d">
+        <di:waypoint x="458" y="117" />
+        <di:waypoint x="510" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fsuvr8_di" bpmnElement="Flow_0fsuvr8">
+        <di:waypoint x="610" y="117" />
+        <di:waypoint x="672" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="142" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_171kgbj_di" bpmnElement="Activity_06c9w7g">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xo6fv2_di" bpmnElement="event_approval">
+        <dc:Bounds x="422" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="419" y="142" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1a9vsgs_di" bpmnElement="Activity_16e050o">
+        <dc:Bounds x="510" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bboeeq_di" bpmnElement="Event_0bboeeq">
+        <dc:Bounds x="672" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="664" y="142" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

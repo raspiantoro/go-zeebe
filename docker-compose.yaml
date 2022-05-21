@@ -91,7 +91,7 @@ services:
       - .:/home/apps
     environment:
       ZEEBE_ADDRESS: zeebe_broker
-      ZEEBE_CLIENT_ID: ini adalah test
+      ZEEBE_CLIENT_ID: wallet_svc
       ZEEBE_CLIENT_SECRET:
       ZEEBE_AUTHORIZATION_SERVER_URL:
     networks:

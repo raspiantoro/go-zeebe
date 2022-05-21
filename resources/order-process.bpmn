@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0gu9e4v" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:process id="order-process" name="Order Process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Order Placed">
+      <bpmn:outgoing>Flow_0sntqji</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_05c29js" name="Order Delivered">
+      <bpmn:incoming>Flow_0tmysif</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0sntqji" sourceRef="StartEvent_1" targetRef="Activity_132nswk" />
+    <bpmn:serviceTask id="Activity_132nswk" name="Collect Money">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="payment-service" />
+        <zeebe:taskHeaders>
+          <zeebe:header key="method" value="VISA" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0sntqji</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qow8je</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0qow8je" sourceRef="Activity_132nswk" targetRef="Activity_02o98cc" />
+    <bpmn:serviceTask id="Activity_02o98cc" name="Fetch Items">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="fetcher-service" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qow8je</bpmn:incoming>
+      <bpmn:outgoing>Flow_14tr15j</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_14tr15j" sourceRef="Activity_02o98cc" targetRef="Activity_16rhzgq" />
+    <bpmn:serviceTask id="Activity_16rhzgq" name="Ship Parcel">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="shipping-service" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14tr15j</bpmn:incoming>
+      <bpmn:outgoing>Flow_0tmysif</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0tmysif" sourceRef="Activity_16rhzgq" targetRef="Event_05c29js" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="order-process">
+      <bpmndi:BPMNEdge id="Flow_0sntqji_di" bpmnElement="Flow_0sntqji">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="270" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qow8je_di" bpmnElement="Flow_0qow8je">
+        <di:waypoint x="370" y="97" />
+        <di:waypoint x="430" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14tr15j_di" bpmnElement="Flow_14tr15j">
+        <di:waypoint x="530" y="97" />
+        <di:waypoint x="590" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tmysif_di" bpmnElement="Flow_0tmysif">
+        <di:waypoint x="690" y="97" />
+        <di:waypoint x="772" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="165" y="122" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0g79pd1_di" bpmnElement="Activity_132nswk">
+        <dc:Bounds x="270" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06kjpxc_di" bpmnElement="Activity_02o98cc">
+        <dc:Bounds x="430" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_112mg75_di" bpmnElement="Activity_16rhzgq">
+        <dc:Bounds x="590" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_05c29js_di" bpmnElement="Event_05c29js">
+        <dc:Bounds x="772" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="751" y="122" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
