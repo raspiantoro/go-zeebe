@@ -21,8 +21,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/raspiantoro/go-zeebe/commons/bootstrap/database"
-	"github.com/raspiantoro/go-zeebe/commons/bootstrap/zeebe"
+	"github.com/raspiantoro/go-zeebe/builder/database"
+	"github.com/raspiantoro/go-zeebe/builder/zeebe"
 	"github.com/raspiantoro/go-zeebe/purchase/internal/commons"
 	"github.com/raspiantoro/go-zeebe/purchase/internal/handler"
 	"github.com/raspiantoro/go-zeebe/purchase/internal/handler/workflow"
@@ -69,7 +69,8 @@ var workerCmd = &cobra.Command{
 			},
 		})
 
-		jobWorker := zeebe.NewJobWorker("prepare-purchase", purchaseHandler.Prepare)
+		prepareWorker := zeebe.NewJobWorker("prepare-purchase", purchaseHandler.Prepare)
+		updateStatusWorker := zeebe.NewJobWorker("update-purchase-status", purchaseHandler.UpdateStatus)
 
 		sigs := make(chan os.Signal, 1)
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -83,7 +84,8 @@ var workerCmd = &cobra.Command{
 
 		<-done
 		fmt.Println("exiting worker")
-		jobWorker.Close()
+		prepareWorker.Close()
+		updateStatusWorker.Close()
 		fmt.Println("bye")
 	},
 }

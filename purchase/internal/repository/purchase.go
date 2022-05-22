@@ -18,7 +18,7 @@ func NewPurchaseRepository(opt Option) *purchaseRepository {
 }
 
 func (p *purchaseRepository) Get(ctx context.Context, ID string) (purchase model.Purchase, err error) {
-	result := p.DB.First(&purchase, ID)
+	result := p.DB.Where("id = ?", ID).First(&purchase)
 	if result.Error != nil {
 		err = result.Error
 		log.Error(err)

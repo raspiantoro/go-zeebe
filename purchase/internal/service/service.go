@@ -17,5 +17,6 @@ type Service struct {
 }
 
 type PurchaseService interface {
-	Prepare(ctx context.Context, variables map[string]interface{}) (purchaseID string, err error)
+	Prepare(ctx context.Context, status string, variables map[string]interface{}) (purchaseID string, err error)
+	UpdateStatus(ctx context.Context, status string, variables map[string]interface{}) (err error)
 }

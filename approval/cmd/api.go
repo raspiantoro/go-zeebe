@@ -23,17 +23,27 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/raspiantoro/go-zeebe/approval/internal/command"
+	"github.com/raspiantoro/go-zeebe/approval/internal/commons"
+	"github.com/raspiantoro/go-zeebe/approval/internal/handler"
+	"github.com/raspiantoro/go-zeebe/approval/internal/handler/api"
+	"github.com/raspiantoro/go-zeebe/approval/internal/repository"
+	"github.com/raspiantoro/go-zeebe/approval/internal/service"
+	"github.com/raspiantoro/go-zeebe/builder/database"
 	"github.com/raspiantoro/go-zeebe/builder/zeebe"
-	"github.com/raspiantoro/go-zeebe/purchase/internal/command"
-	"github.com/raspiantoro/go-zeebe/purchase/internal/commons"
-	"github.com/raspiantoro/go-zeebe/purchase/internal/handler"
-	"github.com/raspiantoro/go-zeebe/purchase/internal/handler/api"
 	"github.com/spf13/cobra"
 )
 
 // apiCmd represents the api command
 var apiCmd = &cobra.Command{
-	Use: "api",
+	Use:   "api",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		zeebeConfig := zeebe.Config{
 			Gateway:  os.Getenv("ZEEBE_ADDRESS"),
@@ -44,29 +54,44 @@ var apiCmd = &cobra.Command{
 			panic(err)
 		}
 
-		purchaseCommand, err := zeebe.NewCommand("purchasing-process")
+		db, err := database.GetDB(os.Getenv("POSTGRES_URL"))
 		if err != nil {
 			panic(err)
 		}
 
+		approvalCommand := zeebe.NewMessageCommand("purchase_approval_message")
+
 		command := command.Command{
-			Purchase: purchaseCommand,
+			Approval: approvalCommand,
 		}
 
-		handlerOption := handler.Option{
-			Option: commons.Option{
-				Command: command,
+		option := commons.Option{
+			Command: command,
+			DB:      db,
+		}
+
+		approvalRepository := repository.NewApprovalRepository(repository.Option{Option: option})
+
+		approvalService := service.NewApprovalService(service.Option{
+			Option: option,
+			Repository: repository.Repository{
+				Approval: approvalRepository,
 			},
-		}
+		})
 
-		purchaseHandler := api.NewPurchaseHandler(handlerOption)
+		approvalHandler := api.NewApprovalHandler(handler.Option{
+			Option: option,
+			Service: service.Service{
+				Approval: approvalService,
+			},
+		})
 
 		e := echo.New()
 		e.Use(middleware.Logger())
 		e.Use(middleware.Recover())
 
-		e.POST("/purchase", purchaseHandler.Submit)
-		e.Logger.Fatal(e.Start(":3000"))
+		e.POST("/approval", approvalHandler.Submit)
+		e.Logger.Fatal(e.Start(":3001"))
 
 		sigs := make(chan os.Signal, 1)
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)

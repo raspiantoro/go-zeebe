@@ -5,16 +5,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	"github.com/raspiantoro/go-zeebe/purchase/internal/handler"
+	"github.com/raspiantoro/go-zeebe/approval/internal/handler"
+	"github.com/raspiantoro/go-zeebe/approval/internal/payload"
 )
 
 type ApprovalHandler struct {
 	handler.Option
-}
-
-type ApprovalRequest struct {
-	PurchaseID string `json:"purchase_id"`
-	Action     string `json:"action"`
 }
 
 func NewApprovalHandler(opt handler.Option) *ApprovalHandler {
@@ -22,9 +18,14 @@ func NewApprovalHandler(opt handler.Option) *ApprovalHandler {
 }
 
 func (a *ApprovalHandler) Submit(c echo.Context) (err error) {
-	req := new(ApprovalRequest)
+	req := new(payload.ApprovalRequest)
 
 	err = c.Bind(req)
+	if err != nil {
+		return
+	}
+
+	_, err = a.Service.Approval.Submit(c.Request().Context(), req)
 	if err != nil {
 		return
 	}

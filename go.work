@@ -1,7 +1,7 @@
 go 1.18
 
 use (
-	./commons
+	./builder
 	./approval
 	./test-broker
 	./purchase
